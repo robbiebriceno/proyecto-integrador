@@ -88,11 +88,13 @@ public class SecurityConfig {
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers(
+            .authorizeHttpRequests(authz -> authz                .requestMatchers(
                     "/",
                     "/error",
                     "/favicon.ico",
+                    "/*.html",
+                    "/*.js",
+                    "/*.css",
                     "/static/**",
                     "/public/**",
                     "/api/auth/**",
