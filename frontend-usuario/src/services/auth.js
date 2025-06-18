@@ -1,4 +1,4 @@
-import api from './api';
+import './api';
 
 export const isAuthenticated = () => {
   return localStorage.getItem('token') !== null;
