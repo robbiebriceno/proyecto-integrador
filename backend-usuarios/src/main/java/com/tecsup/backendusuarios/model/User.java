@@ -51,6 +51,14 @@ public class User {
 
     private Boolean emailVerified = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private UserRole userRole = UserRole.ALUMNO;  // Campo nuevo para el rol específico
+
+    @ManyToOne
+    @JoinColumn(name = "carrera_id")
+    private Carrera carrera;  // Campo nuevo para la carrera
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
                joinColumns = @JoinColumn(name = "user_id"),
@@ -154,6 +162,22 @@ public class User {
 
     public void setEmailVerified(Boolean emailVerified) {
         this.emailVerified = emailVerified;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
+    public Carrera getCarrera() {
+        return carrera;
+    }
+
+    public void setCarrera(Carrera carrera) {
+        this.carrera = carrera;
     }
 
     public Set<Role> getRoles() {

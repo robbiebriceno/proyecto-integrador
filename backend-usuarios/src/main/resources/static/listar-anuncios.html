@@ -3,102 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Anuncios</title>
+    <title>Lista de Publicaciones</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table td {
+            vertical-align: middle;
+        }
+        .description-cell {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .description-cell:hover {
+            white-space: normal;
+            overflow: visible;
+        }
+        .badge-tipo {
+            font-size: 0.9em;
+            padding: 0.5em 0.7em;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-4">
         <div class="row mb-4">
             <div class="col">
-                <h2>Anuncios</h2>
+                <h2>Publicaciones</h2>
             </div>
             <div class="col text-end">
-                <a href="crear-anuncio.html" class="btn btn-primary">Crear Nuevo Anuncio</a>
+                <div class="btn-group me-2" role="group">
+                    <button type="button" class="btn btn-outline-primary active" onclick="filtrarPorTipo('todos')">Todos</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filtrarPorTipo('anuncio')">Anuncios</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filtrarPorTipo('evento')">Eventos</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filtrarPorTipo('webinar')">Webinars</button>
+                </div>
+                <a href="crear-anuncio.html" class="btn btn-primary">Crear Publicación</a>
             </div>
         </div>
 
-        <!-- Tabla de Anuncios -->
+        <!-- Tabla de Publicaciones -->
         <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
+            <table class="table table-striped table-hover">
+                <thead class="table-light">
                     <tr>
-                        <th>Título</th>
-                        <th>Descripción</th>
-                        <th>Fecha</th>
-                        <th>Ponente</th>
-                        <th>Creado por</th>
-                        <th>Acciones</th>
+                        <th style="width: 10%">Tipo</th>
+                        <th style="width: 15%">Título</th>
+                        <th style="width: 25%">Descripción</th>
+                        <th style="width: 20%">Detalles</th>
+                        <th style="width: 15%">Fecha</th>
+                        <th style="width: 10%">Autor</th>
+                        <th style="width: 5%">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="tablaAnuncios">
-                    <!-- Los anuncios se cargarán aquí dinámicamente -->
+                <tbody id="tablaPublicaciones">
+                    <!-- Las publicaciones se cargarán aquí dinámicamente -->
                 </tbody>
             </table>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>    <script>
-        // Verificar autenticación al cargar la página
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let publicaciones = [];
+        let filtroActual = 'todos';
+
         document.addEventListener('DOMContentLoaded', function() {
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('Debe iniciar sesión para ver los anuncios');
+                alert('Debe iniciar sesión para ver las publicaciones');
                 window.location.href = 'login.html';
                 return;
             }
-            cargarAnuncios();
+            cargarPublicaciones();
         });
 
-        function cargarAnuncios() {
+        async function cargarPublicaciones() {
             const token = localStorage.getItem('token');
-            fetch('/api/anuncios', {
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        throw new Error('No autorizado');
-                    }
-                    throw new Error('Error al cargar anuncios');
-                }
-                return response.json();
-            })
-            .then(anuncios => {
-                const tabla = document.getElementById('tablaAnuncios');
-                tabla.innerHTML = '';
+            const headers = {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            };
+
+            try {
+                const [anuncios, eventos, webinars] = await Promise.all([
+                    fetch('/api/anuncios', { headers }).then(r => r.ok ? r.json() : []),
+                    fetch('/api/eventos', { headers }).then(r => r.ok ? r.json() : []),
+                    fetch('/api/webinars', { headers }).then(r => r.ok ? r.json() : [])
+                ]);
+
+                publicaciones = [
+                    ...anuncios.map(a => ({...a, tipo: 'anuncio'})),
+                    ...eventos.map(e => ({...e, tipo: 'evento'})),
+                    ...webinars.map(w => ({...w, tipo: 'webinar'}))
+                ];
+
+                mostrarPublicaciones();
+            } catch (error) {
+                console.error('Error al cargar publicaciones:', error);
+                alert('Error al cargar las publicaciones');
+            }
+        }
+
+        function mostrarPublicaciones() {
+            const tabla = document.getElementById('tablaPublicaciones');
+            tabla.innerHTML = '';
+            
+            if (publicaciones.length === 0) {
+                mostrarMensajeVacio(tabla);
+                return;
+            }
+
+            const publicacionesFiltradas = filtroActual === 'todos' 
+                ? publicaciones 
+                : publicaciones.filter(p => p.tipo === filtroActual);
+
+            if (publicacionesFiltradas.length === 0) {
+                mostrarMensajeVacio(tabla, `No hay publicaciones de tipo: ${filtroActual}`);
+                return;
+            }
+
+            publicacionesFiltradas.forEach(pub => {
+                const row = document.createElement('tr');
                 
-                anuncios.forEach(anuncio => {
-                    const row = `
-                        <tr>
-                            <td>${anuncio.titulo}</td>
-                            <td>${anuncio.descripcion}</td>
-                            <td>${new Date(anuncio.fecha).toLocaleString()}</td>
-                            <td>${anuncio.ponente || '-'}</td>
-                            <td>${anuncio.creadoPor?.username || '-'}</td>
-                            <td>
-                                <button class="btn btn-sm btn-danger" onclick="eliminarAnuncio(${anuncio.id})">
-                                    Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tabla.innerHTML += row;
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                if (error.message === 'No autorizado') {
-                    localStorage.removeItem('token');
-                    window.location.href = 'login.html';
-                } else {
-                    alert('Error al cargar los anuncios');
-                }
+                // Columna Tipo
+                const tipoCol = document.createElement('td');
+                const tipoBadge = document.createElement('span');
+                tipoBadge.className = `badge ${getBadgeClass(pub.tipo)}`;
+                tipoBadge.innerHTML = `${getTipoIcon(pub.tipo)} ${getTipoLabel(pub.tipo)}`;
+                tipoCol.appendChild(tipoBadge);
+                row.appendChild(tipoCol);
+
+                // Columna Título
+                const titleCol = document.createElement('td');
+                titleCol.textContent = pub.titulo;
+                row.appendChild(titleCol);
+
+                // Columna Descripción
+                const descCol = document.createElement('td');
+                descCol.className = 'description-cell';
+                descCol.textContent = pub.contenido || pub.descripcion || '-';
+                row.appendChild(descCol);
+
+                // Columna Detalles
+                const detailsCol = document.createElement('td');
+                detailsCol.innerHTML = getDetallesPublicacion(pub);
+                row.appendChild(detailsCol);
+
+                // Columna Fecha
+                const dateCol = document.createElement('td');
+                dateCol.innerHTML = getFormatoFecha(pub);
+                row.appendChild(dateCol);
+
+                // Columna Autor
+                const authorCol = document.createElement('td');
+                authorCol.textContent = pub.autor?.username || pub.creadoPor?.username || '-';
+                row.appendChild(authorCol);
+
+                // Columna Acciones
+                const actionsCol = document.createElement('td');
+                actionsCol.className = 'action-buttons';
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-sm btn-danger';
+                deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+                deleteBtn.onclick = () => eliminarPublicacion(pub.id, pub.tipo);
+                actionsCol.appendChild(deleteBtn);
+                row.appendChild(actionsCol);
+
+                tabla.appendChild(row);
             });
         }
 
-        function eliminarAnuncio(id) {
+        function mostrarMensajeVacio(tabla, mensaje = 'No hay publicaciones disponibles') {
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 7;
+            cell.className = 'text-center p-3';
+            cell.textContent = mensaje;
+            row.appendChild(cell);
+            tabla.appendChild(row);
+        }
+
+        function getTipoIcon(tipo) {
+            const iconos = {
+                'anuncio': '📢',
+                'evento': '📅',
+                'webinar': '💻'
+            };
+            return iconos[tipo] || '📄';
+        }
+
+        function getTipoLabel(tipo) {
+            const labels = {
+                'anuncio': 'Anuncio',
+                'evento': 'Evento',
+                'webinar': 'Webinar'
+            };
+            return labels[tipo] || tipo.charAt(0).toUpperCase() + tipo.slice(1);
+        }
+
+        function getBadgeClass(tipo) {
+            const classes = {
+                'anuncio': 'bg-info',
+                'evento': 'bg-success',
+                'webinar': 'bg-primary'
+            };
+            return classes[tipo] || 'bg-secondary';
+        }
+
+        function getDetallesPublicacion(pub) {
+            switch(pub.tipo) {
+                case 'anuncio':
+                    let tipoAnuncio = 'General';
+                    if (pub.carrera) tipoAnuncio = `Carrera: ${pub.carrera.nombre}`;
+                    if (pub.departamento) tipoAnuncio = `Departamento: ${pub.departamento.nombre}`;
+                    return `<strong>Tipo:</strong> ${tipoAnuncio}`;
+
+                case 'evento':
+                    return `<strong>Ubicación:</strong> ${pub.ubicacion || '-'}<br>
+                           <strong>Capacidad:</strong> ${pub.capacidad || '-'} personas<br>`;
+                           // <strong>Duración:</strong> ${getDuracionEvento(pub)}
+
+                case 'webinar':
+                    return `<strong>Expositor:</strong> ${pub.expositor || '-'}<br>
+                           ${pub.enlace ? `<a href="${pub.enlace}" target="_blank" class="btn btn-sm btn-link">Ver enlace</a>` : '-'}`;
+
+                default:
+                    return '-';
+            }
+        }
+
+        function getFormatoFecha(pub) {
+            let fecha = null;
+            let etiqueta = '';
+
+            switch(pub.tipo) {
+                case 'anuncio':
+                    fecha = pub.fechaPublicacion || pub.fecha;
+                    etiqueta = 'Publicado';
+                    break;
+                case 'evento':
+                    fecha = pub.fechaInicio;
+                    etiqueta = 'Inicia';
+                    break;
+                case 'webinar':
+                    fecha = pub.fecha;
+                    etiqueta = 'Programado';
+                    break;
+            }
+
+            if (!fecha) return '-';
+
+            const fechaObj = new Date(fecha);
+            return `<strong>${etiqueta}:</strong><br>${fechaObj.toLocaleString()}`;
+        }
+
+        function getDuracionEvento(evento) {
+            if (!evento.fechaInicio || !evento.fechaFin) return '-';
+            
+            const inicio = new Date(evento.fechaInicio);
+            const fin = new Date(evento.fechaFin);
+            const diff = Math.abs(fin - inicio);
+            const horas = Math.floor(diff / (1000 * 60 * 60));
+            const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return `${horas}h ${minutos}m`;
+        }
+
+        function filtrarPorTipo(tipo) {
+            filtroActual = tipo;
+            // Actualizar botones activos
+            document.querySelectorAll('.btn-group .btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(tipo) || 
+                    (tipo === 'todos' && btn.textContent === 'Todos')) {
+                    btn.classList.add('active');
+                }
+            });
+            mostrarPublicaciones();
+        }
+
+        async function eliminarPublicacion(id, tipo) {
+            if (!confirm('¿Está seguro de eliminar esta publicación?')) {
+                return;
+            }
+
             const token = localStorage.getItem('token');
             if (!token) {
                 alert('No está autenticado. Por favor, inicie sesión.');
@@ -106,31 +298,35 @@
                 return;
             }
 
-            if (confirm('¿Está seguro de eliminar este anuncio?')) {
-                fetch(`/api/anuncios/${id}`, {
+            const endpoint = tipo === 'anuncio' ? '/api/anuncios' :
+                           tipo === 'evento' ? '/api/eventos' :
+                           '/api/webinars';
+
+            try {
+                const response = await fetch(`${endpoint}/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': 'Bearer ' + token
                     }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        if (response.status === 401) {
-                            throw new Error('No autorizado');
-                        }
-                        throw new Error('Error al eliminar el anuncio');
-                    }
-                    cargarAnuncios();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    if (error.message === 'No autorizado') {
-                        localStorage.removeItem('token');
-                        window.location.href = 'login.html';
-                    } else {
-                        alert('Error al eliminar el anuncio');
-                    }
                 });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('No autorizado');
+                    }
+                    const text = await response.text();
+                    throw new Error(text || 'Error al eliminar la publicación');
+                }
+
+                await cargarPublicaciones();
+            } catch (error) {
+                console.error('Error:', error);
+                if (error.message === 'No autorizado') {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('Error al eliminar la publicación: ' + error.message);
+                }
             }
         }
     </script>
