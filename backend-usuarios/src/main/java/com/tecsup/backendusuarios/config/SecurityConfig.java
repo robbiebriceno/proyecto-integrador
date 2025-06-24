@@ -100,7 +100,8 @@ public class SecurityConfig {
                     "/api/auth/**",
                     "/oauth2/**",
                     "/actuator/health",
-                    "/*.html"
+                    "/*.html",
+                    "/api/auth/oauth2/authorize/google"
                 )
                 .permitAll()
                 .anyRequest()

@@ -3,70 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Publicaciones</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .table td {
-            vertical-align: middle;
-        }
-        .description-cell {
-            max-width: 300px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .description-cell:hover {
-            white-space: normal;
-            overflow: visible;
-        }
-        .badge-tipo {
-            font-size: 0.9em;
-            padding: 0.5em 0.7em;
-        }
-        .action-buttons {
-            white-space: nowrap;
-        }
-    </style>
+    <title>Lista de Publicaciones | TECSUP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="https://www.tecsup.edu.pe/sites/default/files/favicon.ico">
 </head>
-<body>
-    <div class="container mt-4">
-        <div class="row mb-4">
-            <div class="col">
-                <h2>Publicaciones</h2>
+<body class="bg-white min-h-screen font-sans flex flex-col">
+    <header class="bg-white shadow-md py-4 mb-8">
+        <div class="container mx-auto flex items-center justify-between px-4">
+            <div class="flex items-center gap-3">
+                <img src="https://www.tecsup.edu.pe/wp-content/uploads/2024/07/Group-680.png" alt="TECSUP Logo" class="h-10 w-auto">
+                
             </div>
-            <div class="col text-end">
-                <div class="btn-group me-2" role="group">
-                    <button type="button" class="btn btn-outline-primary active" onclick="filtrarPorTipo('todos')">Todos</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filtrarPorTipo('anuncio')">Anuncios</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filtrarPorTipo('evento')">Eventos</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filtrarPorTipo('webinar')">Webinars</button>
+            <nav>
+                <a href="index.html" class="text-blue-900 hover:text-blue-700 font-semibold transition px-3">Inicio</a>
+                <a href="listar-anuncios.html" class="text-blue-900 hover:text-blue-700 font-semibold transition px-3">Publicaciones</a>
+                <a href="crear-anuncio.html" class="text-blue-900 hover:text-blue-700 font-semibold transition px-3">Crear</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 pb-10 flex-1">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <h2 class="text-3xl font-bold text-blue-900 mb-4 md:mb-0 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m4 0h-1v-4h-1m4 0h-1v-4h-1" /></svg>
+                Publicaciones Institucionales
+            </h2>
+            <div class="flex flex-col md:flex-row md:items-center gap-2">
+                <div class="flex gap-1 mb-2 md:mb-0">
+                    <button type="button" class="btn-filter px-4 py-2 rounded-l-lg bg-white text-blue-700 border border-blue-300 hover:bg-blue-100 font-semibold transition" onclick="filtrarPorTipo('todos')">Todos</button>
+                    <button type="button" class="btn-filter px-4 py-2 bg-white text-blue-700 border-t border-b border-blue-300 hover:bg-blue-100 font-semibold transition" onclick="filtrarPorTipo('anuncio')">Anuncios</button>
+                    <button type="button" class="btn-filter px-4 py-2 bg-white text-blue-700 border-t border-b border-blue-300 hover:bg-blue-100 font-semibold transition" onclick="filtrarPorTipo('evento')">Eventos</button>
+                    <button type="button" class="btn-filter px-4 py-2 rounded-r-lg bg-white text-blue-700 border border-blue-300 hover:bg-blue-100 font-semibold transition" onclick="filtrarPorTipo('webinar')">Webinars</button>
                 </div>
-                <a href="crear-anuncio.html" class="btn btn-primary">Crear Publicación</a>
+                <a href="crear-anuncio.html" class="ml-0 md:ml-4 px-5 py-2 bg-blue-700 text-white rounded-lg shadow hover:bg-blue-800 font-semibold transition">Crear Publicación</a>
             </div>
         </div>
-
-        <!-- Tabla de Publicaciones -->
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="table-light">
+        <div class="overflow-x-auto rounded-lg shadow-lg bg-white">
+            <table class="min-w-full divide-y divide-blue-200">
+                <thead class="bg-blue-50">
                     <tr>
-                        <th style="width: 10%">Tipo</th>
-                        <th style="width: 15%">Título</th>
-                        <th style="width: 25%">Descripción</th>
-                        <th style="width: 20%">Detalles</th>
-                        <th style="width: 15%">Fecha</th>
-                        <th style="width: 10%">Autor</th>
-                        <th style="width: 5%">Acciones</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Imagen</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Tipo</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Título</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Descripción</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Detalles</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Fecha</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Autor</th>
+                        <th class="px-3 py-3 text-center text-xs font-bold text-blue-700 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="tablaPublicaciones">
+                <tbody id="tablaPublicaciones" class="bg-white divide-y divide-blue-100">
                     <!-- Las publicaciones se cargarán aquí dinámicamente -->
                 </tbody>
             </table>
         </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </main>
+    <footer class="bg-white border-t py-4 mt-10 w-full">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-sm text-blue-900">
+            <div class="flex items-center gap-2">
+                <img src="https://www.tecsup.edu.pe/wp-content/uploads/2024/07/Group-680.png" alt="TECSUP Logo" class="h-6 w-auto">
+                <span>TECSUP &copy; 2025</span>
+            </div>
+            <span class="mt-2 md:mt-0">Plataforma Institucional de Publicaciones</span>
+        </div>
+    </footer>
     <script>
         let publicaciones = [];
         let filtroActual = 'todos';
@@ -128,51 +127,53 @@
 
             publicacionesFiltradas.forEach(pub => {
                 const row = document.createElement('tr');
-                
+                // Miniatura de imagen
+                const imgCol = document.createElement('td');
+                if (pub.imagen) {
+                    imgCol.innerHTML = `<img src="${pub.imagen}" alt="img" class="rounded-lg shadow w-14 h-14 object-cover mx-auto" loading="lazy">`;
+                } else {
+                    imgCol.innerHTML = '<span class="text-gray-400">-</span>';
+                }
+                row.appendChild(imgCol);
                 // Columna Tipo
                 const tipoCol = document.createElement('td');
                 const tipoBadge = document.createElement('span');
-                tipoBadge.className = `badge ${getBadgeClass(pub.tipo)}`;
+                tipoBadge.className = `px-2 py-1 rounded-full text-xs font-bold ${getBadgeClass(pub.tipo)}`;
                 tipoBadge.innerHTML = `${getTipoIcon(pub.tipo)} ${getTipoLabel(pub.tipo)}`;
                 tipoCol.appendChild(tipoBadge);
                 row.appendChild(tipoCol);
-
                 // Columna Título
                 const titleCol = document.createElement('td');
                 titleCol.textContent = pub.titulo;
+                titleCol.className = 'font-semibold text-blue-900';
                 row.appendChild(titleCol);
-
                 // Columna Descripción
                 const descCol = document.createElement('td');
-                descCol.className = 'description-cell';
+                descCol.className = 'truncate max-w-xs text-gray-700';
+                descCol.title = pub.contenido || pub.descripcion || '-';
                 descCol.textContent = pub.contenido || pub.descripcion || '-';
                 row.appendChild(descCol);
-
                 // Columna Detalles
                 const detailsCol = document.createElement('td');
                 detailsCol.innerHTML = getDetallesPublicacion(pub);
                 row.appendChild(detailsCol);
-
                 // Columna Fecha
                 const dateCol = document.createElement('td');
                 dateCol.innerHTML = getFormatoFecha(pub);
                 row.appendChild(dateCol);
-
                 // Columna Autor
                 const authorCol = document.createElement('td');
                 authorCol.textContent = pub.autor?.username || pub.creadoPor?.username || '-';
                 row.appendChild(authorCol);
-
                 // Columna Acciones
                 const actionsCol = document.createElement('td');
-                actionsCol.className = 'action-buttons';
+                actionsCol.className = 'text-center';
                 const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn btn-sm btn-danger';
-                deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+                deleteBtn.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded transition';
+                deleteBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="inline w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
                 deleteBtn.onclick = () => eliminarPublicacion(pub.id, pub.tipo);
                 actionsCol.appendChild(deleteBtn);
                 row.appendChild(actionsCol);
-
                 tabla.appendChild(row);
             });
         }
@@ -180,8 +181,8 @@
         function mostrarMensajeVacio(tabla, mensaje = 'No hay publicaciones disponibles') {
             const row = document.createElement('tr');
             const cell = document.createElement('td');
-            cell.colSpan = 7;
-            cell.className = 'text-center p-3';
+            cell.colSpan = 8;
+            cell.className = 'text-center p-6 text-gray-400';
             cell.textContent = mensaje;
             row.appendChild(cell);
             tabla.appendChild(row);
@@ -207,11 +208,11 @@
 
         function getBadgeClass(tipo) {
             const classes = {
-                'anuncio': 'bg-info',
-                'evento': 'bg-success',
-                'webinar': 'bg-primary'
+                'anuncio': 'bg-blue-200 text-blue-800',
+                'evento': 'bg-green-200 text-green-800',
+                'webinar': 'bg-purple-200 text-purple-800'
             };
-            return classes[tipo] || 'bg-secondary';
+            return classes[tipo] || 'bg-gray-200 text-gray-800';
         }
 
         function getDetallesPublicacion(pub) {
@@ -220,16 +221,13 @@
                     let tipoAnuncio = 'General';
                     if (pub.carrera) tipoAnuncio = `Carrera: ${pub.carrera.nombre}`;
                     if (pub.departamento) tipoAnuncio = `Departamento: ${pub.departamento.nombre}`;
-                    return `<strong>Tipo:</strong> ${tipoAnuncio}`;
+                    return `<span class="block text-xs text-gray-600"><strong>Tipo:</strong> ${tipoAnuncio}</span>`;
 
                 case 'evento':
-                    return `<strong>Ubicación:</strong> ${pub.ubicacion || '-'}<br>
-                           <strong>Capacidad:</strong> ${pub.capacidad || '-'} personas<br>`;
-                           // <strong>Duración:</strong> ${getDuracionEvento(pub)}
+                    return `<span class="block text-xs text-gray-600"><strong>Ubicación:</strong> ${pub.ubicacion || '-'}<br><strong>Capacidad:</strong> ${pub.capacidad || '-'} personas</span>`;
 
                 case 'webinar':
-                    return `<strong>Expositor:</strong> ${pub.expositor || '-'}<br>
-                           ${pub.enlace ? `<a href="${pub.enlace}" target="_blank" class="btn btn-sm btn-link">Ver enlace</a>` : '-'}`;
+                    return `<span class="block text-xs text-gray-600"><strong>Expositor:</strong> ${pub.expositor || '-'}<br>${pub.enlace ? `<a href="${pub.enlace}" target="_blank" class="text-blue-600 underline">Ver enlace</a>` : '-'}</span>`;
 
                 default:
                     return '-';
@@ -258,29 +256,17 @@
             if (!fecha) return '-';
 
             const fechaObj = new Date(fecha);
-            return `<strong>${etiqueta}:</strong><br>${fechaObj.toLocaleString()}`;
-        }
-
-        function getDuracionEvento(evento) {
-            if (!evento.fechaInicio || !evento.fechaFin) return '-';
-            
-            const inicio = new Date(evento.fechaInicio);
-            const fin = new Date(evento.fechaFin);
-            const diff = Math.abs(fin - inicio);
-            const horas = Math.floor(diff / (1000 * 60 * 60));
-            const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            
-            return `${horas}h ${minutos}m`;
+            return `<span class="block text-xs text-gray-700"><strong>${etiqueta}:</strong><br>${fechaObj.toLocaleString()}</span>`;
         }
 
         function filtrarPorTipo(tipo) {
             filtroActual = tipo;
-            // Actualizar botones activos
-            document.querySelectorAll('.btn-group .btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.toLowerCase().includes(tipo) || 
-                    (tipo === 'todos' && btn.textContent === 'Todos')) {
-                    btn.classList.add('active');
+            document.querySelectorAll('.btn-filter').forEach(btn => {
+                btn.classList.remove('bg-blue-700', 'text-white');
+                btn.classList.add('bg-white', 'text-blue-700');
+                if (btn.textContent.toLowerCase().includes(tipo) || (tipo === 'todos' && btn.textContent === 'Todos')) {
+                    btn.classList.remove('bg-white', 'text-blue-700');
+                    btn.classList.add('bg-blue-700', 'text-white');
                 }
             });
             mostrarPublicaciones();
