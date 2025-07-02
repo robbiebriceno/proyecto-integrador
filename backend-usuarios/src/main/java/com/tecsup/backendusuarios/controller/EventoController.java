@@ -45,6 +45,8 @@ public class EventoController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createEvento(@RequestBody Evento evento, @CurrentUser UserPrincipal currentUser) {
+        System.out.println("DEBUG: Valor de imagen recibido en el backend: " + evento.getImagen());
+
         User user = userRepository.findById(currentUser.getId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         evento.setAutor(user);

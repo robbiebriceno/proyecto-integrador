@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -49,6 +50,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
         if(StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
             throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
+        }
+
+        if (!oAuth2UserInfo.getEmail().endsWith("@tecsup.edu.pe")) {
+            throw new OAuth2AuthenticationProcessingException("Solo correos institucionales de Tecsup permitidos.");
         }
 
         Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());

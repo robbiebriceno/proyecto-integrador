@@ -31,6 +31,8 @@ public class Evento {
     @Column
     private Integer capacidad;
 
+
+    @Column
     private String imagen;
 
     @ManyToOne
@@ -40,19 +42,6 @@ public class Evento {
     private User autor;
 
     public Evento() {}
-
-    public Evento(Long id, User autor, Carrera carrera, String imagen, String ubicacion, LocalDateTime fechaFin, LocalDateTime fechaInicio, String descripcion, String titulo, Integer capacidad) {
-        this.id = id;
-        this.autor = autor;
-        this.carrera = carrera;
-        this.imagen = imagen;
-        this.ubicacion = ubicacion;
-        this.fechaFin = fechaFin;
-        this.fechaInicio = fechaInicio;
-        this.descripcion = descripcion;
-        this.titulo = titulo;
-        this.capacidad = capacidad;
-    }
 
     // Getters y Setters
     public Long getId() {
