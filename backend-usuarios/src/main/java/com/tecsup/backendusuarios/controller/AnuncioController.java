@@ -51,7 +51,7 @@ public class AnuncioController {
 
     // Crear un nuevo anuncio
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> createAnuncio(@RequestBody Anuncio anuncio, @CurrentUser UserPrincipal currentUser) {
         try {
             User user = userRepository.findById(currentUser.getId())
@@ -83,12 +83,14 @@ public class AnuncioController {
 
     // Actualizar un anuncio
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Anuncio> updateAnuncio(@PathVariable Long id, @RequestBody Anuncio anuncioDetails,
             @CurrentUser UserPrincipal currentUser) {
         return anuncioRepository.findById(id)
                 .map(anuncio -> {
-                    if (!anuncio.getAutor().getId().equals(currentUser.getId())) {
+                    boolean isAdmin = currentUser.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                    if (!anuncio.getAutor().getId().equals(currentUser.getId()) && !isAdmin) {
                         throw new RuntimeException("No tienes permiso para editar este anuncio");
                     }
 
@@ -120,11 +122,13 @@ public class AnuncioController {
 
     // Eliminar un anuncio
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> deleteAnuncio(@PathVariable Long id, @CurrentUser UserPrincipal currentUser) {
         return anuncioRepository.findById(id)
                 .map(anuncio -> {
-                    if (!anuncio.getAutor().getId().equals(currentUser.getId())) {
+                    boolean isAdmin = currentUser.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                    if (!anuncio.getAutor().getId().equals(currentUser.getId()) && !isAdmin) {
                         return ResponseEntity.badRequest().body("No tienes permiso para eliminar este anuncio");
                     }
                     anuncioRepository.delete(anuncio);

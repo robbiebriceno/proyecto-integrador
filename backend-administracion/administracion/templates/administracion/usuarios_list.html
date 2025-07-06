@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuarios | Administración</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+</head>
+<body class="bg-white min-h-screen font-sans">
+    <header class="bg-white shadow-md py-4 mb-8">
+        <div class="container mx-auto flex items-center justify-between px-4">
+            <div class="flex items-center gap-3">
+                <img src="https://www.tecsup.edu.pe/sites/default/files/tecsup-logo_1.png" alt="TECSUP Logo" class="h-10 w-auto">
+                <span class="text-2xl font-bold text-blue-900 tracking-tight">TECSUP</span>
+            </div>
+            <nav>
+                <a href="/usuarios/" class="text-blue-900 hover:text-blue-700 font-semibold transition px-3">Usuarios</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 pb-10">
+        <h2 class="text-3xl font-bold text-blue-900 mb-6">Usuarios</h2>
+        <a href="/usuarios/crear/" class="px-5 py-2 bg-blue-700 text-white rounded-lg shadow hover:bg-blue-800 font-semibold transition mb-4 inline-block">Crear Usuario</a>
+        <div class="overflow-x-auto rounded-lg shadow-lg bg-white">
+            <table class="min-w-full divide-y divide-blue-200">
+                <thead class="bg-blue-50">
+                    <tr>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">ID</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Usuario</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Email</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Rol</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td class="px-3 py-2">{{ usuario.id }}</td>
+                        <td class="px-3 py-2">{{ usuario.username }}</td>
+                        <td class="px-3 py-2">{{ usuario.email }}</td>
+                        <td class="px-3 py-2">{{ usuario.rol }}</td>
+                        <td class="px-3 py-2">
+                            <form method="post" action="/usuarios/eliminar/{{ usuario.id }}/" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-800 text-xs">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center text-gray-400 py-4">No hay usuarios para mostrar.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <footer class="bg-white border-t mt-10 py-4">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-sm text-blue-900">
+            <div class="flex items-center gap-2">
+                <img src="https://www.tecsup.edu.pe/sites/default/files/tecsup-logo_1.png" alt="TECSUP Logo" class="h-6 w-auto">
+                <span>TECSUP &copy; 2025</span>
+            </div>
+            <span class="mt-2 md:mt-0">Panel de Administración</span>
+        </div>
+    </footer>
+</body>
+</html>

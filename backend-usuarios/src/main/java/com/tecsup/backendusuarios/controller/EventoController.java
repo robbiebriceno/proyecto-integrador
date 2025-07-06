@@ -43,7 +43,7 @@ public class EventoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> createEvento(@RequestBody Evento evento, @CurrentUser UserPrincipal currentUser) {
         System.out.println("DEBUG: Valor de imagen recibido en el backend: " + evento.getImagen());
 
@@ -54,12 +54,14 @@ public class EventoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Evento> updateEvento(@PathVariable Long id, @RequestBody Evento eventoDetails, 
             @CurrentUser UserPrincipal currentUser) {
         return eventoRepository.findById(id)
                 .map(evento -> {
-                    if (!evento.getAutor().getId().equals(currentUser.getId())) {
+                    boolean isAdmin = currentUser.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                    if (!evento.getAutor().getId().equals(currentUser.getId()) && !isAdmin) {
                         throw new RuntimeException("No tienes permiso para editar este evento");
                     }
                     if (eventoDetails.getTitulo() != null) evento.setTitulo(eventoDetails.getTitulo());
@@ -75,11 +77,13 @@ public class EventoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> deleteEvento(@PathVariable Long id, @CurrentUser UserPrincipal currentUser) {
         return eventoRepository.findById(id)
                 .map(evento -> {
-                    if (!evento.getAutor().getId().equals(currentUser.getId())) {
+                    boolean isAdmin = currentUser.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                    if (!evento.getAutor().getId().equals(currentUser.getId()) && !isAdmin) {
                         return ResponseEntity.badRequest().body("No tienes permiso para eliminar este evento");
                     }
                     eventoRepository.delete(evento);

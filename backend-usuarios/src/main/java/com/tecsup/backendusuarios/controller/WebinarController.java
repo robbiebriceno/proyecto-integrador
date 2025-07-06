@@ -38,7 +38,7 @@ public class WebinarController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> createWebinar(@RequestBody Webinar webinar, @CurrentUser UserPrincipal currentUser) {
         User user = userRepository.findById(currentUser.getId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -47,12 +47,14 @@ public class WebinarController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Webinar> updateWebinar(@PathVariable Long id, @RequestBody Webinar webinarDetails,
             @CurrentUser UserPrincipal currentUser) {
         return webinarRepository.findById(id)
                 .map(webinar -> {
-                    if (!webinar.getAutor().getId().equals(currentUser.getId())) {
+                    boolean isAdmin = currentUser.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                    if (!webinar.getAutor().getId().equals(currentUser.getId()) && !isAdmin) {
                         throw new RuntimeException("No tienes permiso para editar este webinar");
                     }
                     if (webinarDetails.getTitulo() != null) webinar.setTitulo(webinarDetails.getTitulo());
@@ -67,11 +69,13 @@ public class WebinarController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> deleteWebinar(@PathVariable Long id, @CurrentUser UserPrincipal currentUser) {
         return webinarRepository.findById(id)
                 .map(webinar -> {
-                    if (!webinar.getAutor().getId().equals(currentUser.getId())) {
+                    boolean isAdmin = currentUser.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                    if (!webinar.getAutor().getId().equals(currentUser.getId()) && !isAdmin) {
                         return ResponseEntity.badRequest().body("No tienes permiso para eliminar este webinar");
                     }
                     webinarRepository.delete(webinar);
