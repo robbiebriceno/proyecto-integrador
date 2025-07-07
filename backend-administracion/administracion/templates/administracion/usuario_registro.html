@@ -1,9 +1,15 @@
+        <nav class="flex gap-2 justify-end">
+            <form method="post" action="/logout/" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="ml-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-800 font-semibold transition focus:outline-none focus:ring-2 focus:ring-red-300">Cerrar sesión</button>
+            </form>
+        </nav>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Registrar Usuario | Administración</title>
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-white min-h-screen font-sans flex flex-col">
     <main class="flex-1 flex items-center justify-center">
@@ -45,7 +51,7 @@
     <footer class="bg-white border-t py-4 mt-10 w-full">
         <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-sm text-blue-900">
             <div class="flex items-center gap-2">
-                <img src="https://www.tecsup.edu.pe/sites/default/files/tecsup-logo_1.png" alt="TECSUP Logo" class="h-6 w-auto">
+                <img src="https://eventos.tecsup.edu.pe/portals/848140893/portalResource?resourceType=socialImage&_=1751156407921" alt="TECSUP Logo" class="h-6 w-auto">
                 <span>TECSUP &copy; 2025</span>
             </div>
             <span class="mt-2 md:mt-0">Panel de Administración</span>

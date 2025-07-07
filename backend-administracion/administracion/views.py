@@ -42,12 +42,16 @@ class LogoutView(View):
         request.session.flush()
         return redirect('login')
 
+    def post(self, request):
+        request.session.flush()
+        return redirect('login')
+
 # Ejemplo de vista para listar usuarios consumiendo el backend de usuarios
 class UsuariosListView(JWTRequiredMixin, View):
     def get(self, request):
         token = request.session.get('jwt_token')
         headers = {'Authorization': f'Bearer {token}'} if token else {}
-        response = requests.get('http://localhost:8080/api/usuarios', headers=headers)
+        response = requests.get('http://localhost:8080/api/users', headers=headers)
         usuarios = response.json() if response.status_code == 200 else []
         return render(request, 'administracion/usuarios_list.html', {'usuarios': usuarios})
 
